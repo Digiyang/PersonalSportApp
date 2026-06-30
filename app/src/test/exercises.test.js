@@ -7,6 +7,7 @@ import {
   warmupExercises,
   getExercisesByMuscle,
   getExercisesByEquipment,
+  getAlternativeExercise,
   generateSplitWorkout,
   generateWorkout,
   generateWarmup,
@@ -95,6 +96,32 @@ describe('getExercisesByEquipment', () => {
     const bw = getExercisesByEquipment('bodyweight');
     expect(bw.length).toBeGreaterThan(0);
     expect(bw.every(e => e.equipment.includes('bodyweight'))).toBe(true);
+  });
+});
+
+describe('getAlternativeExercise', () => {
+  it('returns different exercise with same split and overlapping muscles', () => {
+    const original = exercises.find(e => e.split === 'push' && e.equipment.includes('bodyweight'));
+    const alt = getAlternativeExercise(original, ['bodyweight'], []);
+    expect(alt).not.toBeNull();
+    expect(alt.id).not.toBe(original.id);
+    expect(alt.split).toBe(original.split);
+    expect(alt.muscles.some(m => original.muscles.includes(m))).toBe(true);
+  });
+
+  it('excludes specified IDs', () => {
+    const original = exercises.find(e => e.split === 'push');
+    const allPushIds = exercises.filter(e => e.split === 'push').map(e => e.id);
+    const alt = getAlternativeExercise(original, [], allPushIds);
+    expect(alt).toBeNull();
+  });
+
+  it('respects equipment filter', () => {
+    const original = exercises.find(e => e.split === 'pull' && e.equipment.includes('bodyweight'));
+    const alt = getAlternativeExercise(original, ['bodyweight'], []);
+    if (alt) {
+      expect(alt.equipment.every(eq => ['bodyweight'].includes(eq))).toBe(true);
+    }
   });
 });
 

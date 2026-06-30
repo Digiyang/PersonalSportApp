@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Shuffle, Check, Clock, Repeat, ChevronDown, ChevronUp, Minus, Plus, Timer } from 'lucide-react';
-import { exercises, muscleGroups, equipmentList, generateWorkout, generateWarmup, splitTypes, generateSplitWorkout, getTodaySplit, getCurrentWeekNumber, getProgressionForWeek, buildWeeklyTemplate } from '../data/exercises';
+import { exercises, muscleGroups, equipmentList, generateWorkout, generateWarmup, splitTypes, generateSplitWorkout, getTodaySplit, getCurrentWeekNumber, getProgressionForWeek, buildWeeklyTemplate, getAlternativeExercise } from '../data/exercises';
 import { getWorkoutTips, tipCategories } from '../data/tips';
 import ExerciseVisual from '../components/ExerciseVisual';
 import RestTimer from '../components/RestTimer';
@@ -39,6 +39,7 @@ export default function Workout({ state, onLogWorkout }) {
   const [browsePage, setBrowsePage] = useState(0);
   const [exerciseLogs, setExerciseLogs] = useState({});
   const [warmupCollapsed, setWarmupCollapsed] = useState(false);
+  const [swapPickerFor, setSwapPickerFor] = useState(null);
 
   const userEquipment = profile?.equipment || [];
 
@@ -179,6 +180,38 @@ export default function Workout({ state, onLogWorkout }) {
       }
       return logs;
     });
+  };
+
+  const swapExercise = (exerciseId, equipmentOverride) => {
+    const idx = workout.findIndex(e => e.id === exerciseId);
+    if (idx === -1) return;
+    const current = workout[idx];
+    const excludeIds = workout.map(e => e.id);
+    const eqFilter = equipmentOverride ? [equipmentOverride] : userEquipment;
+    const alt = getAlternativeExercise(current, eqFilter, excludeIds);
+    if (!alt) return;
+    const newWorkout = [...workout];
+    newWorkout[idx] = alt;
+    setWorkout(newWorkout);
+    setExerciseLogs(prev => {
+      const logs = { ...prev };
+      delete logs[current.id];
+      logs[alt.id] = {
+        sets: Array.from({ length: alt.sets }, () => ({
+          reps: '',
+          weight: '',
+          completed: false,
+        })),
+      };
+      return logs;
+    });
+    setCompletedExercises(prev => {
+      const next = new Set(prev);
+      next.delete(current.id);
+      return next;
+    });
+    setExpandedExercise(alt.id);
+    setSwapPickerFor(null);
   };
 
   const startRest = (seconds) => {
@@ -638,7 +671,16 @@ export default function Workout({ state, onLogWorkout }) {
                             </div>
                           )}
 
-                          <div style={{ display: 'flex', gap: 8 }}>
+                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <button className="btn btn-secondary btn-sm" onClick={(e) => { e.stopPropagation(); swapExercise(exercise.id); }}>
+                              <Shuffle size={14} /> Alternative
+                            </button>
+                            <button
+                              className={`btn btn-sm ${swapPickerFor === exercise.id ? 'btn-primary' : 'btn-secondary'}`}
+                              onClick={(e) => { e.stopPropagation(); setSwapPickerFor(swapPickerFor === exercise.id ? null : exercise.id); }}
+                            >
+                              <Shuffle size={14} /> With...
+                            </button>
                             <button className="btn btn-secondary btn-sm" onClick={() => startRest(exercise.rest)}>
                               <Timer size={14} /> Start {exercise.rest}s Rest
                             </button>
@@ -652,6 +694,26 @@ export default function Workout({ state, onLogWorkout }) {
                               <Clock size={14} /> 90s
                             </button>
                           </div>
+
+                          {swapPickerFor === exercise.id && (
+                            <div className="fade-in" style={{ marginTop: 12, padding: 12, borderRadius: 10, background: 'rgba(162,155,254,0.06)', border: '1px solid rgba(162,155,254,0.15)' }}>
+                              <div style={{ fontSize: 12, color: '#a29bfe', fontWeight: 600, marginBottom: 8 }}>
+                                Swap with equipment:
+                              </div>
+                              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                                {equipmentList.map(eq => (
+                                  <button
+                                    key={eq.id}
+                                    className="btn btn-secondary btn-sm"
+                                    style={{ fontSize: 11, padding: '4px 10px' }}
+                                    onClick={(e) => { e.stopPropagation(); swapExercise(exercise.id, eq.id); }}
+                                  >
+                                    {eq.icon} {eq.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}

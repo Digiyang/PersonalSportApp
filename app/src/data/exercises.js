@@ -46635,6 +46635,21 @@ export function getExercisesByDifficulty(difficulty) {
   return exercises.filter(e => e.difficulty === difficulty);
 }
 
+export function getAlternativeExercise(exercise, userEquipment, excludeIds) {
+  const candidates = exercises.filter(e => {
+    if (e.id === exercise.id) return false;
+    if (excludeIds && excludeIds.includes(e.id)) return false;
+    if (e.split !== exercise.split) return false;
+    if (userEquipment && userEquipment.length > 0) {
+      if (!e.equipment.every(eq => userEquipment.includes(eq))) return false;
+    }
+    if (!e.muscles.some(m => exercise.muscles.includes(m))) return false;
+    return true;
+  });
+  if (candidates.length === 0) return null;
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
 export function generateWorkout(difficulty, duration, focusMuscles, userEquipment) {
   const available = exercises.filter(e => {
     if (difficulty && e.difficulty !== difficulty) {
