@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Exercise GIFs (123MB, fetched via setup script)
+app/public/videos/
+
+# Cloned dataset repo
+exercises-dataset/
+
+# Android build artifacts
+app/android/.gradle/
+app/android/build/
+app/android/app/build/
+app/android/app/release/
+*.apk
+*.aab
+*.keystore
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Environment
+.env
+.env.local
+*.local
+
+# CodeGraph (local index)
+.codegraph/
+
+# Claude
+.claude/
