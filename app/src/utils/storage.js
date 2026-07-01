@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'fitlife_data';
+const STORAGE_KEY = 'fitforge_data';
 
 export function loadData() {
   try {

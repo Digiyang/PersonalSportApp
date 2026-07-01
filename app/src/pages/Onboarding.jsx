@@ -86,7 +86,7 @@ export default function Onboarding({ onComplete }) {
   return (
     <div className="onboarding">
       <div className="onboarding-card fade-in">
-        <h1>FitLife</h1>
+        <h1>FitForge</h1>
         <p className="subtitle">Your Personal Fitness Companion</p>
 
         <div className="onboarding-step">Step {step} of {totalSteps}</div>

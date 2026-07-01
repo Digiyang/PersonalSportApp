@@ -39,7 +39,7 @@ export default function SettingsPage({ state, onUpdateSettings, onReset }) {
         <div className="card" style={{ marginBottom: 20 }}>
           <h3 style={{ marginBottom: 16 }}>About</h3>
           <div style={{ fontSize: 13, color: '#8888a0', lineHeight: 1.8 }}>
-            <p><strong style={{ color: '#f0f0f5' }}>FitLife</strong> - Your Personal Fitness Companion</p>
+            <p><strong style={{ color: '#f0f0f5' }}>FitForge</strong> - Your Personal Fitness Companion</p>
             <p>Version 1.0.0</p>
             <p>All data is stored locally on your device.</p>
             <p>Exercises are designed for your home equipment.</p>

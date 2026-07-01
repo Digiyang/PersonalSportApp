@@ -1,4 +1,4 @@
-# FitLife — Personal Fitness & Nutrition App
+# FitForge — Personal Fitness & Nutrition App
 
 A comprehensive home & gym workout and nutrition planner, built as a React SPA and packaged as an Android APK via Capacitor.
 
