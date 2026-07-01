@@ -103,6 +103,11 @@ export default function Nutrition({ state, onLogMeal, onUnlogMeal, onClearTodayM
           </div>
           <div className="meal-calories">{meal.calories} kcal</div>
         </div>
+        {meal.portions && meal.portions !== 1 && (
+          <div style={{ fontSize: 11, color: '#fdcb6e', marginBottom: 6, fontWeight: 600 }}>
+            {meal.portions}x portion to match your calorie target
+          </div>
+        )}
         <div className="meal-macros">
           <span className="macro-pill macro-protein">P: {meal.protein}g</span>
           <span className="macro-pill macro-carbs">C: {meal.carbs}g</span>

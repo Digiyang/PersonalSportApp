@@ -128,6 +128,10 @@ export function useAppState() {
     setState(defaultState);
   }, []);
 
+  const importData = useCallback((data) => {
+    setState(prev => ({ ...prev, ...data }));
+  }, []);
+
   return {
     state,
     updateProfile,
@@ -139,5 +143,6 @@ export function useAppState() {
     logWeight,
     updateSettings,
     resetApp,
+    importData,
   };
 }

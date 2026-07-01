@@ -566,10 +566,25 @@ function filterExcluded(meals, excludedFoods) {
   return filtered.length > 0 ? filtered : meals;
 }
 
+function scaleMeal(meal, targetCalories) {
+  const ratio = targetCalories / meal.calories;
+  if (ratio > 0.85 && ratio < 1.15) return meal;
+  const scale = (v) => Math.round(v * ratio);
+  return {
+    ...meal,
+    calories: scale(meal.calories),
+    protein: scale(meal.protein),
+    carbs: scale(meal.carbs),
+    fat: scale(meal.fat),
+    portions: Math.round(ratio * 10) / 10,
+  };
+}
+
 function pickRandom(meals, target) {
   const sorted = [...meals].sort((a, b) => Math.abs(a.calories - target) - Math.abs(b.calories - target));
   const top = sorted.slice(0, Math.min(3, sorted.length));
-  return top[Math.floor(Math.random() * top.length)];
+  const pick = top[Math.floor(Math.random() * top.length)];
+  return scaleMeal(pick, target);
 }
 
 function pickRandomExcluding(meals, target, usedNames) {

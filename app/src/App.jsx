@@ -23,6 +23,7 @@ export default function App() {
     logWeight,
     updateSettings,
     resetApp,
+    importData,
   } = useAppState();
 
   const [page, setPage] = useState('dashboard');
@@ -48,7 +49,7 @@ export default function App() {
       case 'profile':
         return <Profile state={state} onUpdateProfile={updateProfile} />;
       case 'settings':
-        return <SettingsPage state={state} onUpdateSettings={updateSettings} onReset={resetApp} />;
+        return <SettingsPage state={state} onUpdateSettings={updateSettings} onReset={resetApp} onImport={importData} />;
       default:
         return <Dashboard state={state} onNavigate={setPage} />;
     }

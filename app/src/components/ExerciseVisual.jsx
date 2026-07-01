@@ -13,9 +13,18 @@ const warmupGifs = {
   warmup_band_pull_apart: 'videos/0993-sTfvVsG.gif',
 };
 
+const GIF_CDN = 'https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos';
+const USE_LOCAL = import.meta.env.VITE_LOCAL_GIFS === 'true';
+
+function resolveGifUrl(path) {
+  if (!path) return null;
+  if (USE_LOCAL) return `/${path}`;
+  return `${GIF_CDN}/${path.replace('videos/', '')}`;
+}
+
 export default function ExerciseVisual({ exercise, autoPlay = false }) {
   const gifPath = exercise.gifPath || warmupGifs[exercise.id];
-  const gifUrl = gifPath ? `/${gifPath}` : null;
+  const gifUrl = resolveGifUrl(gifPath);
   const [playing, setPlaying] = useState(autoPlay);
   const [posterUrl, setPosterUrl] = useState(null);
   const canvasRef = useRef(null);

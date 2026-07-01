@@ -1,6 +1,41 @@
-import { RotateCcw } from 'lucide-react';
+import { useRef } from 'react';
+import { RotateCcw, Download, Upload } from 'lucide-react';
 
-export default function SettingsPage({ state, onUpdateSettings, onReset }) {
+export default function SettingsPage({ state, onUpdateSettings, onReset, onImport }) {
+  const fileInputRef = useRef(null);
+
+  const handleExport = () => {
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fitforge-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data.profile && !data.workoutLog && !data.settings) {
+          alert('Invalid backup file.');
+          return;
+        }
+        if (window.confirm('This will replace all current data. Continue?')) {
+          onImport(data);
+        }
+      } catch {
+        alert('Could not read file. Make sure it is a valid FitForge backup.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
   const { settings } = state;
 
   return (
@@ -43,6 +78,28 @@ export default function SettingsPage({ state, onUpdateSettings, onReset }) {
             <p>Version 1.0.0</p>
             <p>All data is stored locally on your device.</p>
             <p>Exercises are designed for your home equipment.</p>
+          </div>
+        </div>
+
+        <div className="card" style={{ marginBottom: 20 }}>
+          <h3 style={{ marginBottom: 8 }}>Data Backup</h3>
+          <p style={{ fontSize: 13, color: '#8888a0', marginBottom: 16 }}>
+            Export your data as a JSON file or restore from a previous backup.
+          </p>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button className="btn btn-primary" onClick={handleExport}>
+              <Download size={16} /> Export Data
+            </button>
+            <button className="btn btn-secondary" onClick={() => fileInputRef.current?.click()}>
+              <Upload size={16} /> Import Data
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              style={{ display: 'none' }}
+              onChange={handleImport}
+            />
           </div>
         </div>
 
